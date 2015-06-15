@@ -1,0 +1,28 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.althink.android.ossw.plugins.ipsensorman">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme"
+        android:process="com.althink.android.ossw">
+
+        <service android:name=".PluginService" android:exported="true">
+            <intent-filter>
+                <action android:name="com.althink.android.ossw.plugins.ipsensorman"/>
+            </intent-filter>
+        </service>
+
+        <provider
+            android:name=".PluginContentProvider"
+            android:authorities="com.althink.android.ossw.plugins.ipsensorman"
+            android:exported="true"
+            android:syncable="false"
+            android:enabled="true"
+            android:label="@string/plugin_name"
+            ><meta-data android:name="com.althink.android.ossw.plugin" android:value="true"></meta-data>
+        </provider>
+    </application>
+
+</manifest>
