@@ -3,6 +3,7 @@ package com.althink.android.ossw.plugins.ipsensorman;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -17,9 +18,9 @@ import com.iforpowell.android.ipantmanapi.IpAntManApi;
 /**
  * Created by krzysiek on 10/06/15.
  */
-public class PluginService extends Service {
+public class IpSensorManPluginService extends Service {
 
-    private final static String TAG = PluginService.class.getSimpleName();
+    private final static String TAG = IpSensorManPluginService.class.getSimpleName();
 
     private final Messenger mMessenger = new Messenger(new OperationHandler());
 
@@ -33,21 +34,32 @@ public class PluginService extends Service {
             if (IpAntManApi.HR_EVENT.equals(intent.getAction())) {
                 int value = intent.getIntExtra(IpAntManApi.AMOUNT, 0);
                 Log.i(TAG, "HR: " + value);
+
+                ContentValues values = new ContentValues();
+                values.put(IpSensorManPluginProperty.HEART_RATE.getName(), value);
+                getContentResolver().update(IpSensorManPluginContentProvider.PROPERTY_VALUES_URI, values, null, null);
             } else if (IpAntManApi.BIKE_SPEED_EVENT.equals(intent.getAction())) {
                 int count = intent.getIntExtra(IpAntManApi.COUNT, 0);
                 int time = intent.getIntExtra(IpAntManApi.TIME, 0);
                 Log.i(TAG, "Speed event, count: " + count + ", time: " + time);
 
-                float speed = (count) * 2.149f / (time / 1024.f) * 3.6f;
+                int speed = (int) ((count) * 2.149f / (time / 1024.f) * 3.6f);
                 Log.i(TAG, "Speed: " + speed);
 
+                ContentValues values = new ContentValues();
+                values.put(IpSensorManPluginProperty.CYCLING_SPEED.getName(), speed);
+                getContentResolver().update(IpSensorManPluginContentProvider.PROPERTY_VALUES_URI, values, null, null);
             } else if (IpAntManApi.BIKE_CADENCE_EVENT.equals(intent.getAction())) {
                 int count = intent.getIntExtra(IpAntManApi.COUNT, 0);
                 int time = intent.getIntExtra(IpAntManApi.TIME, 0);
                 Log.i(TAG, "Cadence event, count: " + count + ", time: " + time);
 
-                float cadence = (count) / (time / 1024.f) * 60;
+                int cadence = (int) ((count) / (time / 1024.f) * 60);
                 Log.i(TAG, "Cadence: " + cadence);
+
+                ContentValues values = new ContentValues();
+                values.put(IpSensorManPluginProperty.CYCLING_CADENCE.getName(), cadence);
+                getContentResolver().update(IpSensorManPluginContentProvider.PROPERTY_VALUES_URI, values, null, null);
             }
         }
     };

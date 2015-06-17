@@ -22,4 +22,8 @@
     <string name="muscle_oxygen">Muscle Oxygen</string>
     <string name="btle_long">Bluetooth Low Energy</string>
     <string name="btle">Btle</string>
+
+    <string name="property_heart_rate">Heart rate</string>
+    <string name="property_cycling_speed">Cycling speed</string>
+    <string name="property_cycling_cadence">Cycling cadence</string>
 </resources>

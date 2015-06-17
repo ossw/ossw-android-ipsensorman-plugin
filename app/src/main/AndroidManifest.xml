@@ -8,14 +8,14 @@
         android:theme="@style/AppTheme"
         android:process="com.althink.android.ossw">
 
-        <service android:name=".PluginService" android:exported="true">
+        <service android:name=".IpSensorManPluginService" android:exported="true">
             <intent-filter>
                 <action android:name="com.althink.android.ossw.plugins.ipsensorman"/>
             </intent-filter>
         </service>
 
         <provider
-            android:name=".PluginContentProvider"
+            android:name=".IpSensorManPluginContentProvider"
             android:authorities="com.althink.android.ossw.plugins.ipsensorman"
             android:exported="true"
             android:syncable="false"
