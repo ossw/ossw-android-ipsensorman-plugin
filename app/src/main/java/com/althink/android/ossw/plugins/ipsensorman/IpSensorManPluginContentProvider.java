@@ -8,7 +8,9 @@ import android.database.MatrixCursor;
 import android.net.Uri;
 import android.util.Log;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -31,6 +33,8 @@ public class IpSensorManPluginContentProvider extends ContentProvider {
 
     private Map<String, Object> values = new HashMap<>();
 
+    private static final String[] PROPERTY_COLUMNS;
+
     private static final UriMatcher uriMatcher;
 
     static {
@@ -38,6 +42,12 @@ public class IpSensorManPluginContentProvider extends ContentProvider {
         uriMatcher.addURI(AUTHORITY, API_PROPERTIES_PATH, API_PROPERTIES);
         uriMatcher.addURI(AUTHORITY, API_FUNCTIONS_PATH, API_FUNCTIONS);
         uriMatcher.addURI(AUTHORITY, PROVIDER_PROPERTIES, PROPERTIES);
+
+        LinkedList<String> properties = new LinkedList<>();
+        for (IpSensorManPluginProperty property : IpSensorManPluginProperty.values()) {
+            properties.add(property.getName());
+        }
+        PROPERTY_COLUMNS = properties.toArray(new String[properties.size()]);
     }
 
     @Override
@@ -46,14 +56,24 @@ public class IpSensorManPluginContentProvider extends ContentProvider {
         return true;
     }
 
-    static final String PROPERTY_COLUMN_ID = "_id";
-    static final String PROPERTY_COLUMN_NAME = "name";
-    static final String PROPERTY_COLUMN_DESCRIPTION = "description";
+    static final String API_COLUMN_ID = "_id";
+    static final String API_COLUMN_NAME = "name";
+    static final String API_COLUMN_DESCRIPTION = "description";
+    static final String API_COLUMN_TYPE = "type";
+    static final String API_COLUMN_RANGE = "range";
 
-    private static final String[] PROPERTY_COLUMNS = new String[]{
-            PROPERTY_COLUMN_ID,
-            PROPERTY_COLUMN_NAME,
-            PROPERTY_COLUMN_DESCRIPTION
+    private static final String[] API_PROPERTY_COLUMNS = new String[]{
+            API_COLUMN_ID,
+            API_COLUMN_NAME,
+            API_COLUMN_DESCRIPTION,
+            API_COLUMN_TYPE,
+            API_COLUMN_RANGE
+    };
+
+    private static final String[] API_FUNCTION_COLUMNS = new String[]{
+            API_COLUMN_ID,
+            API_COLUMN_NAME,
+            API_COLUMN_DESCRIPTION
     };
 
     @Override
@@ -61,10 +81,13 @@ public class IpSensorManPluginContentProvider extends ContentProvider {
         int match = uriMatcher.match(uri);
         switch (match) {
             case API_PROPERTIES:
-                MatrixCursor cursor = new MatrixCursor(PROPERTY_COLUMNS);
+                MatrixCursor cursor = new MatrixCursor(API_PROPERTY_COLUMNS);
                 addApiPropertyRow(cursor, IpSensorManPluginProperty.HEART_RATE, R.string.property_heart_rate);
                 addApiPropertyRow(cursor, IpSensorManPluginProperty.CYCLING_SPEED, R.string.property_cycling_speed);
                 addApiPropertyRow(cursor, IpSensorManPluginProperty.CYCLING_CADENCE, R.string.property_cycling_cadence);
+                return cursor;
+            case API_FUNCTIONS:
+                cursor = new MatrixCursor(API_FUNCTION_COLUMNS);
                 return cursor;
             case PROPERTIES:
                 String[] columns = projection != null ? projection : PROPERTY_COLUMNS;
@@ -84,7 +107,7 @@ public class IpSensorManPluginContentProvider extends ContentProvider {
     }
 
     private void addApiPropertyRow(MatrixCursor cursor, IpSensorManPluginProperty property, int descriptionId) {
-        cursor.newRow().add(property.getId()).add(property.getName()).add(getString(descriptionId));
+        cursor.newRow().add(property.getId()).add(property.getName()).add(getString(descriptionId)).add(property.getType().name()).add(null);
     }
 
     private void addApiFunctionRow(MatrixCursor cursor, IpSensorManPluginProperty function, int descriptionId) {
@@ -127,8 +150,12 @@ public class IpSensorManPluginContentProvider extends ContentProvider {
             case PROPERTIES:
                 boolean hasChanged = false;
                 for (String key : values.keySet()) {
-                    if (IpSensorManPluginProperty.resolveByName(key) != null) {
+                    IpSensorManPluginProperty property = IpSensorManPluginProperty.resolveByName(key);
+                    if (property != null) {
                         Object newValue = values.get(key);
+                        if (!property.getType().isTypeSupported(newValue)) {
+                            throw new IllegalArgumentException("Unsupported type for property: " + property.getName());
+                        }
                         Object oldValue = this.values.get(key);
                         if ((oldValue == null && newValue != null) || (oldValue != null && !oldValue.equals(newValue))) {
                             Log.i(TAG, "Update property '" + key + "' with value: " + newValue);

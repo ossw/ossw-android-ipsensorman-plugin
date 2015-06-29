@@ -15,6 +15,8 @@ import android.util.Log;
 
 import com.iforpowell.android.ipantmanapi.IpAntManApi;
 
+import java.math.BigDecimal;
+
 /**
  * Created by krzysiek on 10/06/15.
  */
@@ -43,7 +45,7 @@ public class IpSensorManPluginService extends Service {
                 int time = intent.getIntExtra(IpAntManApi.TIME, 0);
                 Log.i(TAG, "Speed event, count: " + count + ", time: " + time);
 
-                int speed = (int) ((count) * 2.149f / (time / 1024.f) * 3.6f);
+                float speed = ((count) * 2.149f / (time / 1024.f) * 3.6f);
                 Log.i(TAG, "Speed: " + speed);
 
                 ContentValues values = new ContentValues();
@@ -54,7 +56,7 @@ public class IpSensorManPluginService extends Service {
                 int time = intent.getIntExtra(IpAntManApi.TIME, 0);
                 Log.i(TAG, "Cadence event, count: " + count + ", time: " + time);
 
-                int cadence = (int) ((count) / (time / 1024.f) * 60);
+                float cadence = ((count) / (time / 1024.f) * 60);
                 Log.i(TAG, "Cadence: " + cadence);
 
                 ContentValues values = new ContentValues();
