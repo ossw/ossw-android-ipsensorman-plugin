@@ -5,7 +5,7 @@ android {
     buildToolsVersion "22.0.1"
 
     defaultConfig {
-        applicationId "com.althink.android.ossw.plugin.ipsensorman"
+        applicationId "com.althink.android.ossw.plugins.ipsensorman"
         minSdkVersion 18
         targetSdkVersion 22
         versionCode 1

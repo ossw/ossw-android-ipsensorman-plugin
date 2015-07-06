@@ -68,6 +68,7 @@ public class IpSensorManPluginService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        Log.d(TAG, "onBind");
         registerWithIpSensorMan();
         return mMessenger.getBinder();
     }
@@ -109,8 +110,6 @@ public class IpSensorManPluginService extends Service {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-
-            // handle msg.what
         }
     }
 }

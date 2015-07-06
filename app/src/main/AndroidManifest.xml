@@ -5,24 +5,28 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:process="com.althink.android.ossw">
-
-        <service android:name=".IpSensorManPluginService" android:exported="true">
-            <intent-filter>
-                <action android:name="com.althink.android.ossw.plugins.ipsensorman"/>
-            </intent-filter>
-        </service>
+        android:theme="@style/AppTheme">
 
         <provider
             android:name=".IpSensorManPluginContentProvider"
             android:authorities="com.althink.android.ossw.plugins.ipsensorman"
-            android:exported="true"
-            android:syncable="false"
             android:enabled="true"
+            android:exported="true"
             android:label="@string/plugin_name"
-            ><meta-data android:name="com.althink.android.ossw.plugin" android:value="true"></meta-data>
+            android:syncable="false">
+            <meta-data
+                android:name="com.althink.android.ossw.plugin"
+                android:value="true"></meta-data>
         </provider>
+
+        <service
+            android:name=".IpSensorManPluginService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.althink.android.ossw.plugins.ipsensorman" />
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>
