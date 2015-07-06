@@ -31,11 +31,11 @@ public class IpSensorManPluginService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            Log.i(TAG, "Action: " + intent.getAction());
+            //Log.i(TAG, "Action: " + intent.getAction());
 
             if (IpAntManApi.HR_EVENT.equals(intent.getAction())) {
                 int value = intent.getIntExtra(IpAntManApi.AMOUNT, 0);
-                Log.i(TAG, "HR: " + value);
+                //Log.i(TAG, "HR: " + value);
 
                 ContentValues values = new ContentValues();
                 values.put(IpSensorManPluginProperty.HEART_RATE.getName(), value);
@@ -43,10 +43,10 @@ public class IpSensorManPluginService extends Service {
             } else if (IpAntManApi.BIKE_SPEED_EVENT.equals(intent.getAction())) {
                 int count = intent.getIntExtra(IpAntManApi.COUNT, 0);
                 int time = intent.getIntExtra(IpAntManApi.TIME, 0);
-                Log.i(TAG, "Speed event, count: " + count + ", time: " + time);
+                //Log.i(TAG, "Speed event, count: " + count + ", time: " + time);
 
                 float speed = ((count) * 2.149f / (time / 1024.f) * 3.6f);
-                Log.i(TAG, "Speed: " + speed);
+                //Log.i(TAG, "Speed: " + speed);
 
                 ContentValues values = new ContentValues();
                 values.put(IpSensorManPluginProperty.CYCLING_SPEED.getName(), speed);
@@ -54,10 +54,10 @@ public class IpSensorManPluginService extends Service {
             } else if (IpAntManApi.BIKE_CADENCE_EVENT.equals(intent.getAction())) {
                 int count = intent.getIntExtra(IpAntManApi.COUNT, 0);
                 int time = intent.getIntExtra(IpAntManApi.TIME, 0);
-                Log.i(TAG, "Cadence event, count: " + count + ", time: " + time);
+                //Log.i(TAG, "Cadence event, count: " + count + ", time: " + time);
 
                 float cadence = ((count) / (time / 1024.f) * 60);
-                Log.i(TAG, "Cadence: " + cadence);
+                //Log.i(TAG, "Cadence: " + cadence);
 
                 ContentValues values = new ContentValues();
                 values.put(IpSensorManPluginProperty.CYCLING_CADENCE.getName(), cadence);
@@ -68,7 +68,7 @@ public class IpSensorManPluginService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d(TAG, "onBind");
+        //Log.d(TAG, "onBind");
         registerWithIpSensorMan();
         return mMessenger.getBinder();
     }
@@ -77,15 +77,12 @@ public class IpSensorManPluginService extends Service {
     public boolean onUnbind(Intent intent) {
         Log.d(TAG, "onUnbind");
         unregisterReceiver(mReceiver);
+        sendIpSensorManAction(IpAntManApi.UNREGISTER_ANT_ACTION);
         return super.onUnbind(intent);
     }
 
     private void registerWithIpSensorMan() {
-        Intent intent;
-        intent = new Intent(IpAntManApi.REGISTER_ANT_ACTION);
-        intent.setClassName("com.iforpowell.android.ipantman", "com.iforpowell.android.ipantman.MainService");
-        intent.putExtra(IpAntManApi.NAME, getString(R.string.app_name));
-        ComponentName comp = startService(intent);
+        sendIpSensorManAction(IpAntManApi.REGISTER_ANT_ACTION);
 
         Intent hr_intent = new Intent(IpAntManApi.START_SENSOR_TYPE_ACTION);
         hr_intent.setClassName("com.iforpowell.android.ipantman", "com.iforpowell.android.ipantman.MainService");
@@ -100,6 +97,14 @@ public class IpSensorManPluginService extends Service {
         filter.addAction(IpAntManApi.BIKE_CADENCE_EVENT);
 
         registerReceiver(mReceiver, filter);
+    }
+
+    private void sendIpSensorManAction(String action) {
+        Intent intent;
+        intent = new Intent(action);
+        intent.setClassName("com.iforpowell.android.ipantman", "com.iforpowell.android.ipantman.MainService");
+        intent.putExtra(IpAntManApi.NAME, getString(R.string.app_name));
+        ComponentName comp = startService(intent);
     }
 
     private class OperationHandler extends Handler {
