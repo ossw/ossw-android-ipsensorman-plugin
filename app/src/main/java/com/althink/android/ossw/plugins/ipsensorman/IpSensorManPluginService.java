@@ -7,10 +7,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.iforpowell.android.ipantmanapi.IpAntManApi;
@@ -45,7 +47,19 @@ public class IpSensorManPluginService extends Service {
                 int time = intent.getIntExtra(IpAntManApi.TIME, 0);
                 //Log.i(TAG, "Speed event, count: " + count + ", time: " + time);
 
-                float speed = ((count) * 2.149f / (time / 1024.f) * 3.6f);
+
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                String speedUnit = sharedPref.getString(IpSensorManPluginSettingsActivity.CYCLING_SPEED_UNIT_PARAM_VALUE, getString(R.string.defaultCyclingSpeedUnit));
+                float circumference = Integer.parseInt(sharedPref.getString(IpSensorManPluginSettingsActivity.CYCLING_WHEEL_CIRCUMFERENCE_PARAM_VALUE, getString(R.string.defaultCyclingCircumference))) / 1000f;
+
+                float multiplier = 1;
+                if ("km/h".equals(speedUnit)) {
+                    multiplier = 3.6f;
+                } else if ("mph".equals(speedUnit)) {
+                    multiplier = 2.23694f;
+                }
+
+                float speed = (count * circumference / (time / 1024.f) * multiplier);
                 //Log.i(TAG, "Speed: " + speed);
 
                 ContentValues values = new ContentValues();
@@ -89,6 +103,12 @@ public class IpSensorManPluginService extends Service {
         hr_intent.putExtra(IpAntManApi.DEVICE_TYPE, IpAntManApi.DEVICE_TYPE_HR);
         hr_intent.putExtra(IpAntManApi.DEVICE_ID, IpAntManApi.KNOWN_SENSORS);
         startService(hr_intent);
+
+        Intent csc_intent = new Intent(IpAntManApi.START_SENSOR_TYPE_ACTION);
+        csc_intent.setClassName("com.iforpowell.android.ipantman", "com.iforpowell.android.ipantman.MainService");
+        csc_intent.putExtra(IpAntManApi.DEVICE_TYPE, IpAntManApi.DEVICE_TYPE_BIKE_SPDCAD);
+        csc_intent.putExtra(IpAntManApi.DEVICE_ID, IpAntManApi.KNOWN_SENSORS);
+        startService(csc_intent);
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(IpAntManApi.NEW_SENSOR_EVENT);

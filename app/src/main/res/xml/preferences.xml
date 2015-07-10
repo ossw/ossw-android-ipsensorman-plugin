@@ -1,0 +1,21 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:key="cycling_wheel_circumference"
+        android:title="@string/pref_title_cycling_wheel_circumference"
+        android:defaultValue="@string/defaultCyclingCircumference"
+        android:selectAllOnFocus="true"
+        android:inputType="number"
+        android:capitalize="words"
+        android:singleLine="true"
+        android:maxLines="1" />
+
+    <ListPreference android:title="@string/pref_title_cycling_speed_unit"
+        android:key="cycling_speed_unit"
+        android:entries="@array/cycling_wheel_dimensions_keys"
+        android:entryValues="@array/cycling_wheel_dimensions_values"
+        android:defaultValue="@string/defaultCyclingSpeedUnit"
+        android:dialogTitle="Select speed unit">
+    </ListPreference>
+
+</PreferenceScreen>

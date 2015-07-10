@@ -26,4 +26,6 @@
     <string name="property_heart_rate">Heart rate</string>
     <string name="property_cycling_speed">Cycling speed</string>
     <string name="property_cycling_cadence">Cycling cadence</string>
+    <string name="pref_title_cycling_wheel_circumference">Wheel circumference in mm</string>
+    <string name="pref_title_cycling_speed_unit">Cycling speed unit</string>
 </resources>

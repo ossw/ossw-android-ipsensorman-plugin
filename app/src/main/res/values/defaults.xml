@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="defaultCyclingCircumference">2136</string>
+    <string name="defaultCyclingSpeedUnit">km/h</string>
+</resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="cycling_wheel_dimensions_keys">
+        <item>km/h</item>
+        <item>mph</item>
+        <item>m/s</item>
+    </string-array>
+
+    <string-array name="cycling_wheel_dimensions_values">
+        <item>km/h</item>
+        <item>mph</item>
+        <item>m/s</item>
+    </string-array>
+
+</resources>
